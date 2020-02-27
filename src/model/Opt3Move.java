@@ -55,9 +55,10 @@ public class Opt3Move implements Solver{
 						for(int optCase=0; optCase<optCases.length; optCase++) {
 							
 							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
+							
+								// 3-Opt Move
 								
 							}
-							
 						}
 						
 					} // End z for
