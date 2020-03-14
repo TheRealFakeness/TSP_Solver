@@ -44,6 +44,10 @@ public class Node {
 	public void setSecondAngle(double value) {
 		angles[1] = value;
 	}
+	public double getFirstAngle() {
+		return angles[0];
+	}
+	
 	
 	
 }

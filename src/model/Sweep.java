@@ -40,11 +40,31 @@ public class Sweep {
 		if (M < 0.5) {
 			for (int i = 0; i < nodes.length; i++) {
 				if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) {
-					
+					nodes[i].setSecondAngle(nodes[i].getFirstAngle()+180);
+					 
 				}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {
+					nodes[i].setSecondAngle(360-nodes[i].getFirstAngle());
 					
-				}else if (nodes[i].getxCoord()) {
+				}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {
+					nodes[i].setSecondAngle(180-nodes[i].getFirstAngle());
 					
+				}else if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {
+					nodes[i].setSecondAngle(nodes[i].getFirstAngle());
+				}
+			}
+		} else {
+			for (int i = 0; i < nodes.length; i++) {
+				if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) {
+					nodes[i].setSecondAngle(180-nodes[i].getFirstAngle());
+					 
+				}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {
+					nodes[i].setSecondAngle(nodes[i].getFirstAngle());
+					
+				}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {
+					nodes[i].setSecondAngle(180+nodes[i].getFirstAngle());
+					
+				}else if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {
+					nodes[i].setSecondAngle(360-nodes[i].getFirstAngle());
 				}
 			}
 		}
