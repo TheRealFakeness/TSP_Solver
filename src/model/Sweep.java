@@ -1,7 +1,7 @@
 package model;
-
+import java.util.*;
 public class Sweep {
-	private static Node[] nodes;
+	private  Node[] nodes;
 	private double cost;
 	private Node origin;
 	
@@ -28,7 +28,7 @@ public class Sweep {
 	
 	// this method will calculate the route based on the angles
 	
-	public static void calculateRoute() {
+	public void calculateRoute() {
 		Node origin = generateOrigin(nodes);
 		double M = Math.random();
 		
@@ -69,7 +69,10 @@ public class Sweep {
 			}
 		}
 		
+		Arrays.sort(nodes);
+		
 	}
+	
 	
 	// this method will generate the origin point which must to be in the between all nodes
 	
