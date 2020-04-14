@@ -8,6 +8,7 @@ public class Model{
 	private double[][] distMatrix;
 	private Node[] route; 
 	private double routeCost;
+	private Node origin; 
 
 	
 	// Constructor
@@ -17,6 +18,7 @@ public class Model{
 		this.distMatrix = calculateDistMatrix();
 		this.route = null;
 		this.routeCost = 0;
+		this.origin = null;
 	}
 	
 	public Model(Node[] nodes, Node[] route) {
@@ -24,6 +26,15 @@ public class Model{
 		this.distMatrix = calculateDistMatrix();
 		this.route = route;
 		this.routeCost = calculateRouteCost();
+		this.origin = null;
+	}
+	
+	public Model(Node[] nodes, Node[] route, Node origin) {
+		this.nodes = nodes;
+		this.distMatrix = calculateDistMatrix();
+		this.route = route;
+		this.routeCost = calculateRouteCost();
+		this.origin = origin;
 	}
 	
 	// Methods
@@ -95,7 +106,9 @@ public class Model{
 		return routeCost;
 	}
 	
-	
+	public Node getOrigin() {
+		return origin;
+	}
 	
 	/*
 	public void displayDistMatrix() {

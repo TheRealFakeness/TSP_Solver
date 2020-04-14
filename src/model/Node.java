@@ -7,7 +7,7 @@ public class Node {
 	private int id;
 	private double xCoord;
 	private double yCoord;
-	private double[] angles;
+	private double angle;
 	private boolean onRoute;
 	
 	// Constructor
@@ -17,9 +17,11 @@ public class Node {
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.onRoute = false;
+		this.angle = 0;
 	}
 	
-	// Getters
+	
+	// Setters && Getters
 	
 	public int getId() {
 		return id;
@@ -38,14 +40,12 @@ public class Node {
 	}
 	
 	
-	public  void setFirstAngle(double value) {
-		angles[0] = value;
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
-	public void setSecondAngle(double value) {
-		angles[1] = value;
-	}
-	public double getFirstAngle() {
-		return angles[0];
+	
+	public double getAngle() {
+		return angle;
 	}
 	
 	

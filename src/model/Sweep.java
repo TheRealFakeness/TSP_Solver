@@ -1,18 +1,46 @@
 package model;
 import java.util.*;
-public class Sweep {
+public class Sweep implements Solver{
+	
 	private  Node[] nodes;
 	private double cost;
 	private Node origin;
+	private double[][] distMatrix;
+	
+	
 	
 	
 	//constructor
 	
-	public Sweep(Node[] nodes,Node origin, double cost) {
-		this.nodes = nodes;
-		this.cost = cost;
-		this.origin = origin;
+	public Sweep(Model model) {
+		
+		this.nodes = model.getNodes();
+		this.cost = 0;
+		this.origin = model.getOrigin();
+		this.distMatrix = model.getDistMatrix();
+		
 	}
+	
+	@Override
+	public Solution solve(Model model) {
+		
+		calculateRoute();
+		calculateRouteCost(); 
+		
+		return new Solution(nodes, cost);
+	}
+	
+	
+	private void calculateRouteCost() {
+		
+		for(int i=0; i<nodes.length-1; i++) {
+			
+			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
+			
+		}
+		
+	}
+	
 	
 	// getters
 	
@@ -28,65 +56,65 @@ public class Sweep {
 	
 	// this method will calculate the route based on the angles
 	
+	
+	//Precondición: Todos los nodos se encuentran en el primer cuadrante
 	public void calculateRoute() {
-		Node origin = generateOrigin(nodes);
-		double M = Math.random();
 		
-		for (int i = 0; i <nodes.length; i++) {
+		if(origin == null) {
+			origin = generateOrigin();
+		}
+	
+		
+		for (int i = 0; i < nodes.length; i++) {
 			
-			nodes[i].setFirstAngle(Math.atan((origin.getyCoord()-nodes[i].getyCoord())/(origin.getxCoord()-nodes[i].getxCoord()))); 
+			Double x = nodes[i].getxCoord();
+			Double y = nodes[i].getyCoord();
+			Double angle = Math.atan(y/x);
+			
+			if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) { //Cuadrante 1
+				angle += 0;
+					
+			}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {  // Cuadrante 4
+				angle = 180 - angle; 
+				
+			} else if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { // Cuadrante 3
+				angle += 180;
+			
+			}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {   // Cuadrante 2
+				angle = 360 - angle;
+				
+			}
+			
+			nodes[i].setAngle(angle);
+			
+				 
 		}
 		
-		if (M < 0.5) {
-			for (int i = 0; i < nodes.length; i++) {
-				if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) {
-					nodes[i].setSecondAngle(nodes[i].getFirstAngle()+180);
-					 
-				}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {
-					nodes[i].setSecondAngle(360-nodes[i].getFirstAngle());
-					
-				}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {
-					nodes[i].setSecondAngle(180-nodes[i].getFirstAngle());
-					
-				}else if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {
-					nodes[i].setSecondAngle(nodes[i].getFirstAngle());
-				}
-			}
-		} else {
-			for (int i = 0; i < nodes.length; i++) {
-				if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) {
-					nodes[i].setSecondAngle(180-nodes[i].getFirstAngle());
-					 
-				}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {
-					nodes[i].setSecondAngle(nodes[i].getFirstAngle());
-					
-				}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {
-					nodes[i].setSecondAngle(180+nodes[i].getFirstAngle());
-					
-				}else if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {
-					nodes[i].setSecondAngle(360-nodes[i].getFirstAngle());
-				}
-			}
-		}
 		
-		Arrays.sort(nodes);
+		Arrays.sort(nodes, new Comparator<Node>() {
+
+			@Override
+			public int compare(Node n1, Node n2) {
+				return Double.compare(n1.getAngle(), n2.getAngle());
+			}
+		});
 		
 	}
 	
+
 	
-	// this method will generate the origin point which must to be in the between all nodes
-	
-	
-	public static Node generateOrigin(Node[] nodes) {
-		double x;
+	// this method will generate the origin point which must to be in the between all node
+	public Node generateOrigin() {
 		double xPoint = 0;
 		double yPoint = 0;
 		for (int i = 0; i<nodes.length;i++) {
 			 xPoint += nodes[i].getxCoord();
 			 yPoint += nodes[i].getyCoord();
 		}
-		Node origin = new Node(0000,xPoint/nodes.length,yPoint/nodes.length);
+		Node origin = new Node(-1, xPoint/nodes.length, yPoint/nodes.length);
 		return origin;
 	}
+
+	
 	
 }
