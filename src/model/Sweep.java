@@ -22,9 +22,6 @@ public class Sweep implements Solver{
 	private double[][] distMatrix;
 	
 	
-	
-	
-	//constructor
 	/*
 	 
 	 *  Create an instance of the Sweep class 
@@ -69,11 +66,14 @@ public class Sweep implements Solver{
 			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
 			
 		}
+		
+		// Adds the cost from the last node of the tour to the initial node of the tour
+		cost += distMatrix[nodes[nodes.length-1].getId()][nodes[0].getId()];
+		
 		return cost;
 	}
 	
-	
-	// getters
+
 	/*
 	 * Returns the nodes matrix; 
 	 * 
