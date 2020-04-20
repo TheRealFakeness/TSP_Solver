@@ -76,6 +76,10 @@ public class Node {
 		return onRoute;
 	}
 	
+	public void setOnRoute(boolean onRoute) {
+		this.onRoute = onRoute;
+	}
+	
 	/*
 	 * Sets the angle of the node in degrees
 	 * @param angle Angle in degrees
