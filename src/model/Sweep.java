@@ -32,13 +32,7 @@ public class Sweep implements Solver{
 	 * @param model model the current instance
 	 * 
 	 */
-	
-	public Sweep(Model model) {
-		
-		this.nodes = model.getNodes();
-		this.cost = 0;
-		this.origin = model.getOrigin();
-		this.distMatrix = model.getDistMatrix();
+	public Sweep() {
 		
 	}
 	
@@ -46,11 +40,16 @@ public class Sweep implements Solver{
 	/*
 	 * Creates an instance of the Solution class using the Sweep algorithm 
 	 * 
-	 * @param model model the  current instance
+	 * @param model model the current instance
 	 */
 	
 	@Override
 	public Solution solve(Model model) {
+		
+		this.nodes = model.getNodes();
+		this.cost = 0;
+		this.origin = model.getOrigin();
+		this.distMatrix = model.getDistMatrix();
 		
 		calculateRoute();
 		cost = calculateRouteCost();  
