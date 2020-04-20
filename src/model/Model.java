@@ -3,7 +3,7 @@ package model;
 public class Model{
 		
 	/*
-	 * List of all nodes in the current instance
+	 * Matrix of all the nodes in the current instance
 	 */
 	private Node[] nodes; 
 	
@@ -15,19 +15,27 @@ public class Model{
 	private double[][] distMatrix;
 	
 	/*
-	 * Ordered matrix of size i+1 nodes that represent the route in the current instance
+	 * Ordered matrix of size i+1 nodes that represent the tour in the current instance
 	 */
 	private Node[] route; //Cambiar route por tour
 	
 	/*
-	 * Cost of the the route 
+	 * Cost of the tour in the current instance
 	 */
 	private double routeCost;
+	
+	/*
+	 * The initial node of the tour
+	 */
 	private Node origin; 
 
 	
-	// Constructor
 	
+	/*
+	 * Creates an instance of the Model class
+	 * 
+	 * @param nodes Matrix of all the nodes in the current instance
+	 */
 	public Model(Node[] nodes) {
 		this.nodes = nodes;
 		this.distMatrix = calculateDistMatrix();
@@ -36,6 +44,12 @@ public class Model{
 		this.origin = null;
 	}
 	
+	/*
+	 * Creates an instance of the Model class
+	 * 
+	 * @param nodes Matrix of all the nodes in the current instance
+	 * @param route Ordered matrix of size i+1 nodes that represent the tour in the current instance
+	 */
 	public Model(Node[] nodes, Node[] route) {
 		this.nodes = nodes;
 		this.distMatrix = calculateDistMatrix();
@@ -44,6 +58,13 @@ public class Model{
 		this.origin = null;
 	}
 	
+	/*
+	 * Creates an instance of the Model class
+	 * 
+	 * @param nodes Matrix of all the nodes in the current instance
+	 * @param route Ordered matrix of size i+1 nodes that represent the tour in the current instance
+	 * @param origin The initial node of the tour
+	 */
 	public Model(Node[] nodes, Node[] route, Node origin) {
 		this.nodes = nodes;
 		this.distMatrix = calculateDistMatrix();
@@ -52,8 +73,14 @@ public class Model{
 		this.origin = origin;
 	}
 	
-	// Methods
 	
+	/*
+	 * Calculates the distance matrix of the nodes
+	 * 
+	 * @return double[][] Symmetric matrix that represents the distance between nodes, 
+	 * 					  	where distMatrix[i][j] is the distance from the
+	 * 						node i to the node j
+	 */
 	public double[][] calculateDistMatrix(){
 		
 		int size = nodes.length;
@@ -79,12 +106,28 @@ public class Model{
 		
 	}
 	
+	
+	/*
+	 * Calculates the euclidean distance between two points of a cartesian plane
+	 * 
+	 * @param x1 X coordinate of the first point
+	 * @param y1 Y coordinate of the first point
+	 * @param x2 X coordinate of the second point
+	 * @param y2 Y coordinate of the second point
+	 * 
+	 * @return double The euclidean distance between the two points
+	 * 
+	 */
 	public double calculateEuclideanDist(double x1, double y1, double x2, double y2) {
 		
 		return Math.sqrt(Math.pow((x1-x2), 2)+Math.pow((y1-y2),2)); 
 	}
 
-
+	/*
+	 * Calculate the cost of the tour
+	 * 
+	 * @return double Cost of the tour 
+	 */
 	public double calculateRouteCost() {
 		
 		double routeCost = 0;
@@ -100,27 +143,44 @@ public class Model{
 		return routeCost;
 	}
 	
-	
-	
-	// Getters
-	
+	/*
+	 * Returns the nodes matrix
+	 * 
+	 * @return Node[] Nodes matrix
+	 */
 	public Node[] getNodes() {
 		return nodes;
 	}
 
-
+	/*
+	 * Returns the distance matrix of the nodes
+	 * @return double[][] distance matrix
+	 */
 	public double[][] getDistMatrix() {
 		return distMatrix;
 	}
-
+	
+	/*
+	 * Returns the tour matrix
+	 * @return Node[] Tour matrix of nodes
+	 */
 	public Node[] getRoute() {
 		return route;
 	}
-
+	
+	/*
+	 * Returns the cost of the tour
+	 * 
+	 * @return double Cost of the tour
+	 */
 	public double getRouteCost() {
 		return routeCost;
 	}
 	
+	/*
+	 * Returns the initial node of the tour
+	 * @return Node initial node
+	 */
 	public Node getOrigin() {
 		return origin;
 	}
