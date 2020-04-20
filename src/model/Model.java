@@ -1,12 +1,27 @@
 package model;
 
 public class Model{
-	
-	// Attributes
-	
+		
+	/*
+	 * List of all nodes in the current instance
+	 */
 	private Node[] nodes; 
+	
+	/*
+	 * Symmetric matrix that represents the distance between nodes, 
+	 * where distMatrix[i][j] is the distance from the
+	 * node i to the node j
+	 */
 	private double[][] distMatrix;
-	private Node[] route; 
+	
+	/*
+	 * Ordered matrix of size i+1 nodes that represent the route in the current instance
+	 */
+	private Node[] route; //Cambiar route por tour
+	
+	/*
+	 * Cost of the the route 
+	 */
 	private double routeCost;
 	private Node origin; 
 
