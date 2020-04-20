@@ -2,15 +2,36 @@ package model;
 import java.util.*;
 public class Sweep implements Solver{
 	
+	/*
+	 * List of all nodes in the current instance
+	 */
 	private  Node[] nodes;
+	/*
+	 * Cost of the tour in the current instance
+	 */
 	private double cost;
+	/*
+	 * The initial node of the tour
+	 */
 	private Node origin;
+	/*
+	 * Symmetric matrix that represents the distance between nodes, 
+	 * where distMatrix[i][j] is the distance from the
+	 * node i to the node j
+	 */
 	private double[][] distMatrix;
 	
 	
 	
 	
 	//constructor
+	/*
+	 
+	 *  Create an instance of the Sweep class 
+	 *  
+	 * @param model model the current instance
+	 * 
+	 */
 	
 	public Sweep(Model model) {
 		
@@ -21,35 +42,61 @@ public class Sweep implements Solver{
 		
 	}
 	
+	
+	/*
+	 * Creates an instance of the Solution class using the Sweep algorithm 
+	 * 
+	 * @param model model the  current instance
+	 */
+	
 	@Override
 	public Solution solve(Model model) {
 		
 		calculateRoute();
-		calculateRouteCost(); 
+		cost = calculateRouteCost();  
 		
 		return new Solution(nodes, cost);
 	}
 	
-	
-	private void calculateRouteCost() {
-		
+	/*
+	 * Calculates the cost of the tour
+	 * 
+	 * @return double  the cost of the tour
+	 */
+	private double calculateRouteCost() {
+		double cost = 0;
 		for(int i=0; i<nodes.length-1; i++) {
 			
 			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
 			
 		}
-		
+		return cost;
 	}
 	
 	
 	// getters
-	
+	/*
+	 * Returns the nodes matrix; 
+	 * 
+	 * @return Node[] the matrix 
+	 */
 	public Node[] getNodes() {
 		return nodes;
 	}
+	/*
+	 * Returns the central node
+	 * 
+	 * @return Node the origin condinade
+	 */
 	public Node getOrigin() {
 		return origin;
 	}
+	
+	/*
+	 * Returns the cost of the tour
+	 * 
+	 * @return double the cost of the tour
+	 */
 	public double getCost() {
 		return cost;
 	}
@@ -57,7 +104,15 @@ public class Sweep implements Solver{
 	// this method will calculate the route based on the angles
 	
 	
-	//Precondición: Todos los nodos se encuentran en el primer cuadrante
+
+	
+	/* 
+	 * Calculate the tour by using the nodes matrix
+	 * 
+	 * <b> pre:</b> All nodes are in the first quadrant of a cartesian plane <br>
+	 * 
+	 * <b> post <b> The nodes matrix is reordered based on the tour 
+	 */
 	public void calculateRoute() {
 		
 		if(origin == null) {
@@ -71,16 +126,16 @@ public class Sweep implements Solver{
 			Double y = nodes[i].getyCoord();
 			Double angle = Math.atan(y/x);
 			
-			if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) { //Cuadrante 1
+			if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {   //First quadrant
 				angle += 0;
 					
-			}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {  // Cuadrante 4
+			}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {  //Fourth quadrant
 				angle = 180 - angle; 
 				
-			} else if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { // Cuadrante 3
+			} else if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { //Third quadrant
 				angle += 180;
 			
-			}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {   // Cuadrante 2
+			}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {   //Second quadrant
 				angle = 360 - angle;
 				
 			}
@@ -103,7 +158,9 @@ public class Sweep implements Solver{
 	
 
 	
-	// this method will generate the origin point which must to be in the between all node
+	/*
+	 * this method will generate the origin cordinade 
+	 */
 	public Node generateOrigin() {
 		double xPoint = 0;
 		double yPoint = 0;
