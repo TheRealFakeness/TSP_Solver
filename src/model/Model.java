@@ -47,6 +47,20 @@ public class Model{
 	/*
 	 * Creates an instance of the Model class
 	 * 
+	 * @param origin The initial node of the tour
+	 * @param nodes Matrix of all the nodes in the current instance
+	 */
+	public Model(Node[] nodes, Node origin) {
+		this.nodes = nodes;
+		this.distMatrix = calculateDistMatrix();
+		this.route = null;
+		this.routeCost = 0;
+		this.origin = origin;
+	}
+	
+	/*
+	 * Creates an instance of the Model class
+	 * 
 	 * @param nodes Matrix of all the nodes in the current instance
 	 * @param route Ordered matrix of size i+1 nodes that represent the tour in the current instance
 	 */
