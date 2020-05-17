@@ -99,6 +99,26 @@ public class ClarkeAndWright implements Solver {
 			double[][] s3 = calculateSMatrix(true, false);
 			double[][] s4 = calculateSMatrix(false, false);
 			
+			//Finds the greater value in each savings matrix
+			Point[] maxPoints = new Point[4];
+			maxPoints[0] = getMaxValue(s1, s1);
+			maxPoints[1] = getMaxValue(s2, s2);
+			maxPoints[2] = getMaxValue(s3, s3);
+			maxPoints[3] = getMaxValue(s4, s4);
+			
+			//Finds the best route merge
+			Point maxPoint = maxPoints[0];
+			
+			for(int i=1; i<3; i++) {
+				
+				double[][] sMaxPoint = maxPoint.getS();
+				double[][] sCurr = maxPoints[i].getS();
+				
+				if(sMaxPoint[maxPoint.getX()][maxPoint.getY()] < sCurr[maxPoints[i].getX()][maxPoints[i].getY()]) {
+					maxPoint = maxPoints[i];
+				}
+			}
+			
 			
 			
 			tourNums--;
@@ -107,7 +127,47 @@ public class ClarkeAndWright implements Solver {
 		return null; // TODO Hay que cambiarlo
 	}
 	
-	private void getMaxValue(double[][] matrix) {
+	private ArrayList<Node> mergeTours(Point maxPoint) {
+		
+		ArrayList<Node> newTour = new ArrayList<Node>();
+		
+		ArrayList<Node> tourA = tours.get(maxPoint.getX());
+		ArrayList<Node> tourB = tours.get(maxPoint.getY());
+		
+		
+		if(maxPoint.getS().equals(s1)) {
+			
+			// Last A - First B			
+			for(int i=0; i<tourA.size(); i++) {
+				newTour.add(tourA.get(i));
+			}
+			
+			for(int i=0; i<tourB.size(); i++) {
+				newTour.add(tourB.get(i));
+			}
+			
+			
+		}else if(maxPoint.getS().equals(s2)) {
+			
+			// First A - First B
+			for(int i=0; i<tourA.size(); i++) {
+				//TODO 
+			}
+			
+			
+		}else if(maxPoint.getS().equals(s3)) {
+			// First A - Last B
+			
+		}else {
+			// Last A - Last B
+			
+		}
+		
+		return newTour;
+		
+	}
+	
+	private Point getMaxValue(double[][] s, double[][] matrix) {
 		
 		int minI = 0;
 		int minJ = 0;
@@ -126,7 +186,7 @@ public class ClarkeAndWright implements Solver {
 			
 		}
 		
-		
+		return new Point(s, minI, minJ);
 		
 	}
 	
