@@ -39,7 +39,15 @@ public class NearestNeighbour implements Solver {
 		this.origin = model.getOrigin();
 		this.distMatrix = model.getDistMatrix();
 		
+		//printMatrix(nodes);
+		//System.out.println("\n \n \n");
+		
 		nodes = calculateTour();
+		
+		//printMatrix(nodes);
+		printMatrixTT(distMatrix);
+		
+		
 		cost = calculateRouteCost();
 	
 		return new Solution(nodes, cost);
@@ -60,30 +68,34 @@ public class NearestNeighbour implements Solver {
 		}
 		
 		tour[0] = origin;
+		origin.setOnRoute(true);
 		
-		for(int i=0; i<nodes.length; i++) {
-			
+		for(int z=1; z<nodes.length; z++) {
+		
 			boolean firstValue = false;
 			int min = -1;
 		
+			int i = tour[z-1].getId();
+			
 			for(int j=0; j<nodes.length; j++) {
 				
-				if(firstValue && distMatrix[i][j] < distMatrix[i][min] && i != j) {
+				if(firstValue && !nodes[j].isOnRoute() && distMatrix[i][j] < distMatrix[i][min] && i != j) {
 					min = j;
 				}
 				
 				if(!nodes[j].isOnRoute() && i!=j && !firstValue) {
-					min = nodes[j].getId();
+					min = j;
 					firstValue = true;
 				}
 				
 			}
 			
-			tour[i+1] = nodes[min];
+			tour[z] = nodes[min];
 			nodes[min].setOnRoute(true);
 		
 		}
 		
+		tour[tour.length-1] = origin;
 
 		return tour;
 	}
@@ -95,7 +107,11 @@ public class NearestNeighbour implements Solver {
 	 */
 	private double calculateRouteCost() {
 		double cost = 0;
+		
+		
+		
 		for(int i=0; i<nodes.length-1; i++) {
+			
 			
 			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
 			
@@ -106,6 +122,32 @@ public class NearestNeighbour implements Solver {
 		
 		return cost;
 	}
+	
+	private void printMatrix(Node[] nodes) {
+		
+		for(int i=0; i<nodes.length; i++) {
+
+			System.out.println(nodes[i].getxCoord() + " " + nodes[i].getyCoord());
+							
+		}
+		
+	}
+	
+	private void printMatrixTT(double[][] m) {
+		
+		System.out.println(m.length);
+		System.out.println(m[0].length);
+		
+		for(int i=0; i<m.length; i++) {
+
+			for(int j=0; j<m[0].length; j++) {
+				System.out.print(m[i][j] + " ");
+			}
+			System.out.println("");			
+		}
+	}
+	
+	
 	
 	
 }

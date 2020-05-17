@@ -30,25 +30,25 @@ public class ClarkeAndWright implements Solver {
 	 * Savings matrix of joining the first node of tour i with the first node of the
 	 * tour j
 	 */
-	private Double[][] s1;
+	private double[][] s1;
 
 	/*
 	 * Savings matrix of joining the first node of tour i with the last node of the
 	 * tour j
 	 */
-	private Double[][] s2;
+	private double[][] s2;
 
 	/*
 	 * Savings matrix of joining the last node of tour i with the first node of tour
 	 * j
 	 */
-	private Double[][] s3;
+	private double[][] s3;
 
 	/*
 	 * Savings matrix of joining the last node of tour i with the last node of tour
 	 * j
 	 */
-	private Double[][] s4;
+	private double[][] s4;
 
 	ArrayList<ArrayList<Node>> tours;
 
@@ -61,14 +61,16 @@ public class ClarkeAndWright implements Solver {
 
 	@Override
 	public Solution solve(Model model) {
+		
 		this.distMatrix = model.getDistMatrix();
 		this.nodes = model.getNodes();
 		this.origin = model.getOrigin();
 		this.tourNums = nodes.length - 1;
 
 		Node[] route = algorithm();
-
-		return null;
+		double cost = calculateRouteCost(route);
+		
+		return new Solution(route, cost);
 	}
 
 	private Node[] algorithm() {
@@ -79,7 +81,8 @@ public class ClarkeAndWright implements Solver {
 		}
 
 		tours = new ArrayList<ArrayList<Node>>();
-
+		
+		//Inicializo los primeros tours
 		for (int k = 0; k < nodes.length; k++) {
 
 			if (nodes[k].equals(origin) == false) {
@@ -92,12 +95,17 @@ public class ClarkeAndWright implements Solver {
 
 		}
 
+		ArrayList<Node> newTour = null;
+		
 		while (tourNums > 1) {
 			
-			double[][] s1 = calculateSMatrix(false, true);
-			double[][] s2 = calculateSMatrix(true, true);
-			double[][] s3 = calculateSMatrix(true, false);
-			double[][] s4 = calculateSMatrix(false, false);
+			//Calculates each savings matrix
+			s1 = calculateSMatrix(false, true);
+			s2 = calculateSMatrix(true, true);
+			s3 = calculateSMatrix(true, false);
+			s4 = calculateSMatrix(false, false);
+			
+			printMatrix(s1);
 			
 			//Finds the greater value in each savings matrix
 			Point[] maxPoints = new Point[4];
@@ -114,25 +122,47 @@ public class ClarkeAndWright implements Solver {
 				double[][] sMaxPoint = maxPoint.getS();
 				double[][] sCurr = maxPoints[i].getS();
 				
-				if(sMaxPoint[maxPoint.getX()][maxPoint.getY()] < sCurr[maxPoints[i].getX()][maxPoints[i].getY()]) {
+				if(sMaxPoint[maxPoint.getI()][maxPoint.getJ()] < sCurr[maxPoints[i].getI()][maxPoints[i].getJ()]) {
 					maxPoint = maxPoints[i];
 				}
 			}
+
+			//System.out.println("i: " + maxPoint.getI());
+			//System.out.println("j: " + maxPoint.getJ());
 			
+			//Removes old tours
+			if(maxPoint.getI() < maxPoint.getJ()) {
+				tours.remove(maxPoint.getI());
+				tours.remove(maxPoint.getJ()-1);
+			}else if(maxPoint.getI() < maxPoint.getJ()) {
+				tours.remove(maxPoint.getJ());
+				tours.remove(maxPoint.getI()-1);
+			}else {
+				tours.remove(maxPoint.getJ());
+			}
 			
+			//Merges the 2 tours with the highest savings
+			newTour = mergeTours(maxPoint);
+			tours.add(newTour);
 			
 			tourNums--;
 		}
 
-		return null; // TODO Hay que cambiarlo
+		Node[] tour = new Node[tours.get(0).size()];
+		
+		for(int i=0; i<tour.length; i++) {
+			tour[i] = tours.get(0).get(i);
+		}
+		
+		return tour;
 	}
 	
 	private ArrayList<Node> mergeTours(Point maxPoint) {
 		
 		ArrayList<Node> newTour = new ArrayList<Node>();
 		
-		ArrayList<Node> tourA = tours.get(maxPoint.getX());
-		ArrayList<Node> tourB = tours.get(maxPoint.getY());
+		ArrayList<Node> tourA = tours.get(maxPoint.getI());
+		ArrayList<Node> tourB = tours.get(maxPoint.getJ());
 		
 		
 		if(maxPoint.getS().equals(s1)) {
@@ -151,16 +181,33 @@ public class ClarkeAndWright implements Solver {
 			
 			// First A - First B
 			for(int i=0; i<tourA.size(); i++) {
-				//TODO 
+				newTour.add(tourA.get(tourA.size()-1-i));
+			}
+			
+			for(int i=0; i<tourB.size(); i++) {
+				newTour.add(tourB.get(i));
 			}
 			
 			
 		}else if(maxPoint.getS().equals(s3)) {
 			// First A - Last B
+			for(int i=0; i<tourA.size(); i++) {
+				newTour.add(tourA.get(i));
+			}
+			
+			for(int i=0; i<tourB.size(); i++) {
+				newTour.add(tourB.get(tourB.size()-1-i));
+			}
 			
 		}else {
 			// Last A - Last B
+			for(int i=0; i<tourA.size(); i++) {
+				newTour.add(tourA.get(tourA.size()-1-i)); 
+			}
 			
+			for(int i=0; i<tourB.size(); i++) {
+				newTour.add(tourB.get(tourB.size()-1-i));
+			}
 		}
 		
 		return newTour;
@@ -170,7 +217,7 @@ public class ClarkeAndWright implements Solver {
 	private Point getMaxValue(double[][] s, double[][] matrix) {
 		
 		int minI = 0;
-		int minJ = 0;
+		int minJ = 1;
 		
 		
 		for(int i=1; i<matrix.length; i++) {
@@ -199,7 +246,9 @@ public class ClarkeAndWright implements Solver {
 
 		ArrayList<Node> tourB;
 		Node nodeB;
-
+		
+		
+		
 		for (int i = 0; i < s1.length; i++) {
 
 			tourA = tours.get(i);
@@ -223,7 +272,7 @@ public class ClarkeAndWright implements Solver {
 
 				s1[i][j] = distMatrix[origin.getId()][nodeA.getId()]
 						+ distMatrix[origin.getId()][nodeB.getId()]
-						+ distMatrix[nodeA.getId()][nodeB.getId()];
+						- distMatrix[nodeA.getId()][nodeB.getId()];
 
 			}
 
@@ -233,6 +282,36 @@ public class ClarkeAndWright implements Solver {
 
 	}
 	
+	/*
+	 * Calculates the cost of the tour
+	 * 
+	 * @return double  the cost of the tour
+	 */
+	private double calculateRouteCost(Node[] nodes) {
+		double cost = 0;
+		for(int i=0; i<nodes.length-1; i++) {
+			
+			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
+			
+		}
+		
+		// Adds the cost from the last node of the tour to the initial node of the tour
+		cost += distMatrix[nodes[nodes.length-1].getId()][nodes[0].getId()];
+		
+		return cost;
+	}
 	
+	private void printMatrix(double[][] m) {
+		
+		System.out.println();
+		for(int i=0; i<m.length; i++) {
+			for(int j=0; j<m[0].length; j++) {
+				System.out.print(m[i][j]+ " ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+		
+	}
 
 }

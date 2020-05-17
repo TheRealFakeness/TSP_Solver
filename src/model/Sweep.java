@@ -117,7 +117,6 @@ public class Sweep implements Solver{
 		if(origin == null) {
 			origin = generateOrigin();
 		}
-	
 		
 		for (int i = 0; i < nodes.length; i++) {
 			

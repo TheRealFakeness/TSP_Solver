@@ -27,7 +27,7 @@ public class FileReaderLIB {
 	
 	public Model readFile() throws IOException {
 		
-		String file = "data" + File.separator + "file.txt";
+		String file = "data" + File.separator + "file2.txt";
 
 		BufferedReader br = new BufferedReader(new FileReader(new File(file)));
 
@@ -36,9 +36,8 @@ public class FileReaderLIB {
 		for (int i = 0; i < 6; i++) {
 			line = br.readLine();
 		}
-		System.out.println(line);
+		
 		String[] cases = line.split(" ");
-		System.out.println(cases[2]);
 		int nodesQuantity = Integer.parseInt(cases[2]);
 		Node[] nodes = new Node[nodesQuantity];
 		
@@ -50,8 +49,6 @@ public class FileReaderLIB {
 		while (count < nodesQuantity) {
 			
 			String[] camps = line.split(" "); 
-			
-			
 			nodes[count] = new Node(count,Double.parseDouble(camps[1]),Double.parseDouble(camps[2]));
 			
 
@@ -62,6 +59,14 @@ public class FileReaderLIB {
 		br.close();
 		
 		Model model = new Model(nodes);
+		
+		/*
+		for(int i=0; i<nodes.length; i++) {
+			Node node = nodes[i];
+			System.out.println(node.getxCoord() + " " + node.getyCoord());
+		}
+		*/
+		
 		
 		return model;
 		
