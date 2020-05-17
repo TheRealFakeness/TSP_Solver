@@ -7,7 +7,25 @@ import java.io.IOException;
 
 public class FileReaderLIB {
 
+	/*
 	public static void main(String[] args) throws IOException {
+				
+		Sweep sp = new Sweep();
+		
+		Solution sl = sp.solve(new Model(nodes));
+		System.out.println("Cost: " + sl.getRouteCost());
+		
+		Node[] nodesTwo = sl.getRoute();
+		
+		for (int i = 0 ; i < nodesTwo.length; i++) {
+			System.out.println(nodesTwo[i].getId());
+		}
+		
+	}
+	*/
+	
+	
+	public Model readFile() throws IOException {
 		
 		String file = "data" + File.separator + "file.txt";
 
@@ -28,14 +46,8 @@ public class FileReaderLIB {
 			line = br.readLine();
 		}
 		
-		System.out.println(nodesQuantity);
 		int count = 0;
-		while (count < 131) {
-
-			// split()
-			// trim()
-			//subString()
-			 
+		while (count < nodesQuantity) {
 			
 			String[] camps = line.split(" "); 
 			
@@ -46,16 +58,12 @@ public class FileReaderLIB {
 			line = br.readLine();
 			count++;
 		}
-		Sweep sp = new Sweep();
 		
-		Solution sl = sp.solve(new Model(nodes));
-		System.out.println("Cost: " + sl.getRouteCost());
+		br.close();
 		
-		Node[] nodesTwo = sl.getRoute();
+		Model model = new Model(nodes);
 		
-		for (int i = 0 ; i < nodesTwo.length; i++) {
-			System.out.println(nodesTwo[i].getId());
-		}
+		return model;
 		
 	}
 
