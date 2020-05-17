@@ -15,19 +15,46 @@ public class FileReaderLIB {
 
 		String line = null;
 
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 6; i++) {
 			line = br.readLine();
 		}
-
-		while (line != null) {
+		System.out.println(line);
+		String[] cases = line.split(" ");
+		System.out.println(cases[2]);
+		int nodesQuantity = Integer.parseInt(cases[2]);
+		Node[] nodes = new Node[nodesQuantity];
+		
+		for (int i = 6; i<9; i++) {
+			line = br.readLine();
+		}
+		
+		System.out.println(nodesQuantity);
+		int count = 0;
+		while (count < 131) {
 
 			// split()
 			// trim()
 			//subString()
-
-			String[] input = line.split(",");
+			 
+			
+			String[] camps = line.split(" "); 
+			
+			
+			nodes[count] = new Node(count,Double.parseDouble(camps[1]),Double.parseDouble(camps[2]));
+			
 
 			line = br.readLine();
+			count++;
+		}
+		Sweep sp = new Sweep();
+		
+		Solution sl = sp.solve(new Model(nodes));
+		System.out.println("Cost: " + sl.getRouteCost());
+		
+		Node[] nodesTwo = sl.getRoute();
+		
+		for (int i = 0 ; i < nodesTwo.length; i++) {
+			System.out.println(nodesTwo[i].getId());
 		}
 		
 	}
