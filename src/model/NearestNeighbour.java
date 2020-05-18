@@ -60,15 +60,7 @@ public class NearestNeighbour implements Solver {
 	 */
 	public Node[] calculateTour() {
 		
-		Node[] tour = new Node[nodes.length+1];
-		
-		if(origin == null) {
-			Random r = new Random();
-			origin = nodes[r.nextInt(nodes.length)];
-		}
-		
-		tour[0] = origin;
-		origin.setOnRoute(true);
+		Node[] tour = initializeTour();
 		
 		for(int z=1; z<nodes.length; z++) {
 		
@@ -97,6 +89,21 @@ public class NearestNeighbour implements Solver {
 		
 		tour[tour.length-1] = origin;
 
+		return tour;
+	}
+	
+	
+	public Node[] initializeTour() {
+		Node[] tour = new Node[nodes.length+1];
+		
+		if(origin == null) {
+			Random r = new Random();
+			origin = nodes[r.nextInt(nodes.length)];
+		}
+		
+		tour[0] = origin;
+		origin.setOnRoute(true);
+		
 		return tour;
 	}
 	

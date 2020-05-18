@@ -50,7 +50,7 @@ public class ClarkeAndWright implements Solver {
 	 */
 	private double[][] s4;
 
-	ArrayList<ArrayList<Node>> tours;
+
 
 	/*
 	 * Creates an instance of the ClarkeAndWright class
@@ -75,44 +75,25 @@ public class ClarkeAndWright implements Solver {
 
 	private Node[] algorithm() {
 
-		if (origin == null) {
-			Random r = new Random();
-			origin = nodes[r.nextInt(nodes.length)];
-		}
-
-		tours = new ArrayList<ArrayList<Node>>();
-		
-		//Inicializo los primeros tours
-		for (int k = 0; k < nodes.length; k++) {
-
-			if (nodes[k].equals(origin) == false) {
-				ArrayList<Node> tour = new ArrayList<Node>();
-				tour.add(nodes[k]);
-
-				tours.add(tour);
-
-			}
-
-		}
+		ArrayList<ArrayList<Node>> tours = initializeTour();
 
 		ArrayList<Node> newTour = null;
+
 		
 		while (tourNums > 1) {
 			
 			//Calculates each savings matrix
-			s1 = calculateSMatrix(false, true);
-			s2 = calculateSMatrix(true, true);
-			s3 = calculateSMatrix(true, false);
-			s4 = calculateSMatrix(false, false);
-			
-			printMatrix(s1);
+			s1 = calculateSMatrix(false, true, tours);
+			s2 = calculateSMatrix(true, true, tours);
+			s3 = calculateSMatrix(true, false, tours);
+			s4 = calculateSMatrix(false, false, tours);
 			
 			//Finds the greater value in each savings matrix
 			Point[] maxPoints = new Point[4];
-			maxPoints[0] = getMaxValue(s1, s1);
-			maxPoints[1] = getMaxValue(s2, s2);
-			maxPoints[2] = getMaxValue(s3, s3);
-			maxPoints[3] = getMaxValue(s4, s4);
+			maxPoints[0] = getMaxValue(s1);
+			maxPoints[1] = getMaxValue(s2);
+			maxPoints[2] = getMaxValue(s3);
+			maxPoints[3] = getMaxValue(s4);
 			
 			//Finds the best route merge
 			Point maxPoint = maxPoints[0];
@@ -130,6 +111,9 @@ public class ClarkeAndWright implements Solver {
 			//System.out.println("i: " + maxPoint.getI());
 			//System.out.println("j: " + maxPoint.getJ());
 			
+			//Merges the 2 tours with the highest savings
+			newTour = mergeTours(maxPoint, tours);
+			
 			//Removes old tours
 			if(maxPoint.getI() < maxPoint.getJ()) {
 				tours.remove(maxPoint.getI());
@@ -141,23 +125,55 @@ public class ClarkeAndWright implements Solver {
 				tours.remove(maxPoint.getJ());
 			}
 			
-			//Merges the 2 tours with the highest savings
-			newTour = mergeTours(maxPoint);
+			
 			tours.add(newTour);
 			
 			tourNums--;
 		}
 
-		Node[] tour = new Node[tours.get(0).size()];
+		ArrayList<Node>  aux = tours.get(0); 
+		
+		aux.add(0, origin);
+		aux.add(origin);
+		
+		Node[] tour = new Node[aux.size()];
 		
 		for(int i=0; i<tour.length; i++) {
-			tour[i] = tours.get(0).get(i);
+			tour[i] = aux.get(i);
 		}
+		
+		
 		
 		return tour;
 	}
 	
-	private ArrayList<Node> mergeTours(Point maxPoint) {
+	private ArrayList<ArrayList<Node>> initializeTour() {
+		
+		if (origin == null) {
+			Random r = new Random(); 
+			origin = nodes[r.nextInt(nodes.length)];
+		}
+
+		ArrayList<ArrayList<Node>> tours = new ArrayList<ArrayList<Node>>();
+		
+		//Inicializo los primeros tours
+		for (int k = 0; k < nodes.length; k++) {
+
+			if (nodes[k].equals(origin) == false) {
+				ArrayList<Node> tour = new ArrayList<Node>();
+				tour.add(nodes[k]);
+
+				tours.add(tour);
+
+			}
+
+		}
+		
+		return tours;
+		
+	}
+	
+	private ArrayList<Node> mergeTours(Point maxPoint, ArrayList<ArrayList<Node>> tours) {
 		
 		ArrayList<Node> newTour = new ArrayList<Node>();
 		
@@ -214,11 +230,10 @@ public class ClarkeAndWright implements Solver {
 		
 	}
 	
-	private Point getMaxValue(double[][] s, double[][] matrix) {
+	private Point getMaxValue(double[][] matrix) {
 		
 		int minI = 0;
 		int minJ = 1;
-		
 		
 		for(int i=1; i<matrix.length; i++) {
 			
@@ -233,11 +248,11 @@ public class ClarkeAndWright implements Solver {
 			
 		}
 		
-		return new Point(s, minI, minJ);
+		return new Point(matrix, minI, minJ);
 		
 	}
 	
-	private double[][] calculateSMatrix(boolean firstNodeA, boolean firstNodeB) {
+	private double[][] calculateSMatrix(boolean firstNodeA, boolean firstNodeB, ArrayList<ArrayList<Node>> tours) {
 
 		double[][] s1 = new double[tourNums][tourNums];
 
@@ -288,6 +303,7 @@ public class ClarkeAndWright implements Solver {
 	 * @return double  the cost of the tour
 	 */
 	private double calculateRouteCost(Node[] nodes) {
+		
 		double cost = 0;
 		for(int i=0; i<nodes.length-1; i++) {
 			

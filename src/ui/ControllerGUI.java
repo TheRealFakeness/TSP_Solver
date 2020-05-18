@@ -86,7 +86,7 @@ public class ControllerGUI {
 		ClarkeAndWright cw = new ClarkeAndWright();
 		Solution sol = cw.solve(model);
 
-		// cost.setText(sol.getRouteCost() + "");
+		cost.setText(sol.getRouteCost() + "");
 		plotRoute(sol);
 	}
 
@@ -123,7 +123,7 @@ public class ControllerGUI {
 			/*
 			gc.setStroke(javafx.scene.paint.Color.BLACK);
 			gc.fillOval(i.getxCoord() * num, i.getyCoord() * num, 5, 5);
-			 */
+			*/
 			
 			gc.setStroke(javafx.scene.paint.Color.RED);
 			gc.strokeLine(i.getxCoord() * num, i.getyCoord() * num, j.getxCoord() * num, j.getyCoord() * num);
