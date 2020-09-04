@@ -1,11 +1,13 @@
 package model;
+
 import java.util.*;
-public class Sweep implements Solver{
-	
+
+public class Sweep implements Solver {
+
 	/*
 	 * List of all nodes in the current instance
 	 */
-	private  Node[] nodes;
+	private Node[] nodes;
 	/*
 	 * Cost of the tour in the current instance
 	 */
@@ -15,73 +17,70 @@ public class Sweep implements Solver{
 	 */
 	private Node origin;
 	/*
-	 * Symmetric matrix that represents the distance between nodes, 
-	 * where distMatrix[i][j] is the distance from the
-	 * node i to the node j
+	 * Symmetric matrix that represents the distance between nodes, where
+	 * distMatrix[i][j] is the distance from the node i to the node j
 	 */
 	private double[][] distMatrix;
-	
-	
+
 	/*
-	 
-	 *  Create an instance of the Sweep class 
-	 *  
+	 * 
+	 * Create an instance of the Sweep class
+	 * 
 	 * @param model model the current instance
 	 * 
 	 */
 	public Sweep() {
-		
+
 	}
-	
-	
+
 	/*
-	 * Creates an instance of the Solution class using the Sweep algorithm 
+	 * Creates an instance of the Solution class using the Sweep algorithm
 	 * 
 	 * @param model model the current instance
 	 */
-	
+
 	@Override
 	public Solution solve(Model model) {
-		
+
 		this.nodes = model.getNodes();
 		this.cost = 0;
 		this.origin = model.getOrigin();
 		this.distMatrix = model.getDistMatrix();
-		
+
 		calculateRoute();
-		cost = calculateRouteCost();  
-		
+		cost = calculateRouteCost();
+
 		return new Solution(nodes, cost);
 	}
-	
+
 	/*
 	 * Calculates the cost of the tour
 	 * 
-	 * @return double  the cost of the tour
+	 * @return double the cost of the tour
 	 */
 	private double calculateRouteCost() {
 		double cost = 0;
-		for(int i=0; i<nodes.length-1; i++) {
-			
-			cost += distMatrix[nodes[i].getId()][nodes[i+1].getId()];
-			
+		for (int i = 0; i < nodes.length - 1; i++) {
+
+			cost += distMatrix[nodes[i].getId()][nodes[i + 1].getId()];
+
 		}
-		
+
 		// Adds the cost from the last node of the tour to the initial node of the tour
-		cost += distMatrix[nodes[nodes.length-1].getId()][nodes[0].getId()];
-		
+		cost += distMatrix[nodes[nodes.length - 1].getId()][nodes[0].getId()];
+
 		return cost;
 	}
-	
 
 	/*
-	 * Returns the nodes matrix; 
+	 * Returns the nodes matrix;
 	 * 
-	 * @return Node[] the matrix 
+	 * @return Node[] the matrix
 	 */
 	public Node[] getNodes() {
 		return nodes;
 	}
+
 	/*
 	 * Returns the central node
 	 * 
@@ -90,7 +89,7 @@ public class Sweep implements Solver{
 	public Node getOrigin() {
 		return origin;
 	}
-	
+
 	/*
 	 * Returns the cost of the tour
 	 * 
@@ -99,51 +98,55 @@ public class Sweep implements Solver{
 	public double getCost() {
 		return cost;
 	}
-	
-	// this method will calculate the route based on the angles
-	
-	
 
-	
-	/* 
+	// this method will calculate the route based on the angles
+
+	/*
 	 * Calculate the tour by using the nodes matrix
 	 * 
 	 * <b> pre:</b> All nodes are in the first quadrant of a cartesian plane <br>
 	 * 
-	 * <b> post <b> The nodes matrix is reordered based on the tour 
+	 * <b> post <b> The nodes matrix is reordered based on the tour
 	 */
 	public void calculateRoute() {
-		
-		if(origin == null) {
+
+		if (origin == null) {
 			origin = generateOrigin();
 		}
-		
+
 		for (int i = 0; i < nodes.length; i++) {
-			
-			Double x = nodes[i].getxCoord();
-			Double y = nodes[i].getyCoord();
-			Double angle = Math.atan(y/x);
-			
-			if(nodes[i].getxCoord()> origin.getxCoord() && nodes[i].getyCoord()>= origin.getyCoord()) {   //First quadrant
+
+//			Double x = nodes[i].getxCoord();
+//			Double y = nodes[i].getyCoord();
+//			Double angle = Math.atan(y/x);
+
+			Double xDif = Math.abs(nodes[i].getxCoord() - origin.getxCoord());
+			Double yDif = Math.abs(nodes[i].getxCoord() - origin.getyCoord());
+			Double angle = Math.atan(yDif / xDif);
+
+			// 0 degress from X+ axis and increases angle in anti-clockwise direction
+			if (nodes[i].getxCoord() > origin.getxCoord() && nodes[i].getyCoord() >= origin.getyCoord()) { // First
+																											// quadrant
 				angle += 0;
-					
-			}else if(nodes[i].getxCoord()>=origin.getxCoord() &&  nodes[i].getyCoord()<origin.getyCoord()) {  //Fourth quadrant
-				angle = 180 - angle; 
-				
-			} else if (nodes[i].getxCoord()<origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { //Third quadrant
+
+			} else if (nodes[i].getxCoord() >= origin.getxCoord() && nodes[i].getyCoord() < origin.getyCoord()) { // Fourth
+																													// quadrant
+				angle = 180 - angle;
+
+			} else if (nodes[i].getxCoord() < origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { // Third
+																													// quadrant
 				angle += 180;
-			
-			}else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord()>origin.getyCoord() ) {   //Second quadrant
+
+			} else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord() > origin.getyCoord()) { // Second
+																													// quadrant
 				angle = 360 - angle;
-				
+
 			}
-			
+
 			nodes[i].setAngle(angle);
-			
-				 
+
 		}
-		
-		
+
 		Arrays.sort(nodes, new Comparator<Node>() {
 
 			@Override
@@ -151,25 +154,24 @@ public class Sweep implements Solver{
 				return Double.compare(n1.getAngle(), n2.getAngle());
 			}
 		});
-		
-	}
-	
 
-	
+		// Escojo el menor angulo
+
+	}
+
 	/*
-	 * this method will generate the origin cordinade 
+	 * this method will generate the origin cordinade
 	 */
 	public Node generateOrigin() {
 		double xPoint = 0;
 		double yPoint = 0;
-		for (int i = 0; i<nodes.length;i++) {
-			 xPoint += nodes[i].getxCoord();
-			 yPoint += nodes[i].getyCoord();
+
+		for (int i = 0; i < nodes.length; i++) {
+			xPoint += nodes[i].getxCoord();
+			yPoint += nodes[i].getyCoord();
 		}
-		Node origin = new Node(-1, xPoint/nodes.length, yPoint/nodes.length);
+		Node origin = new Node(-1, xPoint / nodes.length, yPoint / nodes.length);
 		return origin;
 	}
 
-	
-	
 }

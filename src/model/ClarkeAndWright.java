@@ -74,11 +74,11 @@ public class ClarkeAndWright implements Solver {
 	}
 
 	private Node[] algorithm() {
-
+		
 		ArrayList<ArrayList<Node>> tours = initializeTour();
 
 		ArrayList<Node> newTour = null;
-
+		
 		
 		while (tourNums > 1) {
 			
@@ -103,7 +103,11 @@ public class ClarkeAndWright implements Solver {
 				double[][] sMaxPoint = maxPoint.getS();
 				double[][] sCurr = maxPoints[i].getS();
 				
-				if(sMaxPoint[maxPoint.getI()][maxPoint.getJ()] < sCurr[maxPoints[i].getI()][maxPoints[i].getJ()]) {
+				
+				double maxSaving = sMaxPoint[maxPoint.getI()][maxPoint.getJ()];
+				double currentSaving = sCurr[maxPoints[i].getI()][maxPoints[i].getJ()];
+				
+				if( currentSaving > maxSaving ) {
 					maxPoint = maxPoints[i];
 				}
 			}
@@ -116,15 +120,12 @@ public class ClarkeAndWright implements Solver {
 			
 			//Removes old tours
 			if(maxPoint.getI() < maxPoint.getJ()) {
-				tours.remove(maxPoint.getI());
-				tours.remove(maxPoint.getJ()-1);
-			}else if(maxPoint.getI() < maxPoint.getJ()) {
 				tours.remove(maxPoint.getJ());
-				tours.remove(maxPoint.getI()-1);
+				tours.remove(maxPoint.getI());
 			}else {
+				tours.remove(maxPoint.getI());
 				tours.remove(maxPoint.getJ());
 			}
-			
 			
 			tours.add(newTour);
 			
@@ -208,7 +209,7 @@ public class ClarkeAndWright implements Solver {
 		}else if(maxPoint.getS().equals(s3)) {
 			// First A - Last B
 			for(int i=0; i<tourA.size(); i++) {
-				newTour.add(tourA.get(i));
+				newTour.add(tourA.get(tourA.size()-1-i));
 			}
 			
 			for(int i=0; i<tourB.size(); i++) {
@@ -218,7 +219,7 @@ public class ClarkeAndWright implements Solver {
 		}else {
 			// Last A - Last B
 			for(int i=0; i<tourA.size(); i++) {
-				newTour.add(tourA.get(tourA.size()-1-i)); 
+				newTour.add(tourA.get(i)); 
 			}
 			
 			for(int i=0; i<tourB.size(); i++) {
@@ -232,23 +233,23 @@ public class ClarkeAndWright implements Solver {
 	
 	private Point getMaxValue(double[][] matrix) {
 		
-		int minI = 0;
-		int minJ = 1;
+		int maxI = 0;
+		int maxJ = 1;
 		
-		for(int i=1; i<matrix.length; i++) {
+		for(int i=0; i<matrix.length; i++) {
 			
 			for(int j=(i+1); j<matrix[0].length; j++) {
 				
-				if(matrix[i][j] < matrix[minI][minJ]) {
-					minI = i;
-					minJ = j;
+				if(matrix[i][j] > matrix[maxI][maxJ]) {
+					maxI = i;
+					maxJ = j;
 				}
 				
 			}
 			
 		}
 		
-		return new Point(matrix, minI, minJ);
+		return new Point(matrix, maxI, maxJ);
 		
 	}
 	
@@ -261,7 +262,6 @@ public class ClarkeAndWright implements Solver {
 
 		ArrayList<Node> tourB;
 		Node nodeB;
-		
 		
 		
 		for (int i = 0; i < s1.length; i++) {
