@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Stack;
+
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DayDV;
 
 public class Opt3Move implements Solver{
@@ -17,7 +19,9 @@ public class Opt3Move implements Solver{
 		return null;
 	}
 	
-	
+	/*La ruta es de tamaño de la cantidad de nodos, se sobreentiende que el ultimo nodo 
+	 * esta conectado con el primer nodo de la ruta
+	 */
 	public Solution Opt3Move(Model model) {
 		
 		OptCase[] optCases = OptCase.class.getEnumConstants();
@@ -26,38 +30,40 @@ public class Opt3Move implements Solver{
 		int size = nodes.length;
 		
 		double[][] distMatrix = model.getDistMatrix();
-		Node[] route = model.getRoute();
+		Node[] tour = model.getRoute();
 		
 		
 		boolean foundImprovement = false;
 		
 		while(!foundImprovement) {
 			
-			for(int counter_1=0; counter_1<size; counter_1++) {
+			foundImprovement=true;
+			for(int counter_1=0; counter_1<size && foundImprovement; counter_1++) {
 				
 				int i = counter_1;
-				int X1 = route[i].getId();
-				int X2 = route[(i+1) % size].getId();
+				int X1 = tour[i].getId();
+				int X2 = tour[(i+1) % size].getId();
 				
-				for(int counter_2=1; counter_2<size-3; counter_2++) {
+				for(int counter_2=1; counter_2<size-3 && foundImprovement; counter_2++) {
 					
 					int j = (i + counter_2) % size;
-					int Y1 = route[j].getId();
-					int Y2 = route[(j+1) % size].getId();
+					int Y1 = tour[j].getId();
+					int Y2 = tour[(j+1) % size].getId();
 					
 					
-					for(int counter_3=j+1; counter_3<size-1; counter_3++) {
+					for(int counter_3=j+1; counter_3<size-1 && foundImprovement; counter_3++) {
 						
 						int k = (i + counter_3) % size;
-						int Z1 = route[k].getId();
-						int Z2 = route[(k+1) % size].getId();
+						int Z1 = tour[k].getId();
+						int Z2 = tour[(k+1) % size].getId();
 						
 						for(int optCase=0; optCase<optCases.length; optCase++) {
 							
 							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
 							
-								// 3-Opt Move
-								
+								make3OptMove(tour, i, j, k, optCases[optCase]);
+								foundImprovement=false;
+								break;
 							}
 						}
 						
@@ -67,7 +73,63 @@ public class Opt3Move implements Solver{
 		} // End While
 		
 		
-		return null;
+		return new Solution(tour, calculateRouteCost(distMatrix, tour));
+	}
+	
+	public Node[] reverseSegment(Node[] tour, int start, int finish) {
+		
+		Stack<Node> reversed=new Stack<>();
+		
+		//Llenamos el stack
+		for(int z=start; z<=finish;z++) {
+			
+			reversed.push(tour[z]);
+		}
+		
+		for(int z=start; z<=finish;z++) {
+			
+			tour[z]=reversed.pop();
+		}
+		
+		return tour;
+	}
+	
+	public Node[] make3OptMove(Node[] tour, int i, int j, int k, OptCase optCase) {
+		
+		switch(optCase) {
+		
+			case CASE0:		//abc
+				//No hay intercambio
+				break;
+			case CASE1:		//a'bc
+				reverseSegment(tour, (k+1) % tour.length, i);
+				break;
+			case CASE2:		//abc'
+				reverseSegment(tour, (j+1) % tour.length, k);
+				break;
+			case CASE3:		//ab'c
+				reverseSegment(tour, (i+1) % tour.length, j);
+				break;
+			case CASE4:		//ab'c'
+				reverseSegment(tour, (j+1) % tour.length, k);
+				reverseSegment(tour, (i+1) % tour.length, j);
+				break;
+			case CASE5:		//a'b'c
+				reverseSegment(tour, (k+1) % tour.length, i);
+				reverseSegment(tour, (i+1) % tour.length, j);
+				break;
+			case CASE6:		//a'bc'
+				reverseSegment(tour, (k+1) % tour.length, i);
+				reverseSegment(tour, (j+1) % tour.length, k);
+				break;
+			case CASE7:		//a'b'c'
+				reverseSegment(tour, (k+1) % tour.length, i);
+				reverseSegment(tour, (i+1) % tour.length, j);
+				reverseSegment(tour, (j+1) % tour.length, k);
+				break;
+		}
+		
+		return tour;
 	}
 	
 	public double gainExpected(int X1, int X2, int Y1, int Y2, int Z1, int Z2, OptCase optCase, Model model) {
@@ -116,6 +178,29 @@ public class Opt3Move implements Solver{
 		}
 		
 		return addLength - delLength;
+	}
+	
+	/*
+	 * Calculates the cost of the tour
+	 * 
+	 * @return double  the cost of the tour
+	 */
+	private double calculateRouteCost(double[][] distMatrix, Node[] tour) {
+		double cost = 0;
+		
+		
+		
+		for(int i=0; i<tour.length-1; i++) {
+			
+			
+			cost += distMatrix[tour[i].getId()][tour[i+1].getId()];
+			
+		}
+		
+		// Adds the cost from the last node of the tour to the initial node of the tour
+		cost += distMatrix[tour[tour.length-1].getId()][tour[0].getId()];
+		
+		return cost;
 	}
 	
 	
