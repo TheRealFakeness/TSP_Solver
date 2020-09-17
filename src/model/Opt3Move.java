@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DayDV;
@@ -16,7 +17,7 @@ public class Opt3Move implements Solver{
 	public Solution solve(Model model) {
 		
 		
-		return null;
+		return Opt3Move(model);
 	}
 	
 	/*La ruta es de tamaño de la cantidad de nodos, se sobreentiende que el ultimo nodo 
@@ -44,25 +45,30 @@ public class Opt3Move implements Solver{
 				int X1 = tour[i].getId();
 				int X2 = tour[(i+1) % size].getId();
 				
-				for(int counter_2=1; counter_2<size-3 && foundImprovement; counter_2++) {
+				for(int counter_2=1; counter_2<size-2 && foundImprovement; counter_2++) {
 					
 					int j = (i + counter_2) % size;
 					int Y1 = tour[j].getId();
 					int Y2 = tour[(j+1) % size].getId();
 					
 					
-					for(int counter_3=j+1; counter_3<size-1 && foundImprovement; counter_3++) {
+					for(int counter_3=counter_2+1; counter_3<size && foundImprovement; counter_3++) {
 						
 						int k = (i + counter_3) % size;
 						int Z1 = tour[k].getId();
 						int Z2 = tour[(k+1) % size].getId();
 						
-						for(int optCase=0; optCase<optCases.length; optCase++) {
+						for(int optCase=0; optCase<optCases.length && foundImprovement; optCase++) {
 							
+							
+				
 							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
-							
-								make3OptMove(tour, i, j, k, optCases[optCase]);
+								System.out.println(X1 + " " + X2 + " " + Y1 + " " + Y2 + " " + Z1 + " " + Z2);
+								System.out.println(calculateRouteCost(distMatrix, tour));
+								
+								tour = make3OptMove(tour, i, j, k, optCases[optCase]);
 								foundImprovement=false;
+							
 								break;
 							}
 						}
