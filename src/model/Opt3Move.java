@@ -61,7 +61,7 @@ public class Opt3Move implements Solver{
 							
 							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
 							
-								make3OptMove(tour, i, j, k, optCases[optCase]);
+								tour=make3OptMove(tour, i, j, k, optCases[optCase]);
 								foundImprovement=false;
 								break;
 							}
@@ -159,7 +159,8 @@ public class Opt3Move implements Solver{
 				
 		//3-Opt Moves	
 			case CASE4:
-				addLength = distMatrix[X1][Y1] + distMatrix[X2][Z2] + distMatrix[Y2][Z2];
+				//Cambio Z2 por Z1
+				addLength = distMatrix[X1][Y1] + distMatrix[X2][Z1] + distMatrix[Y2][Z2];
 				break;
 			case CASE5:
 				addLength = distMatrix[X1][Z1] + distMatrix[Y2][X2] + distMatrix[Y1][Z2];
