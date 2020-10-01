@@ -111,7 +111,8 @@ public class Sweep implements Solver {
 	public void calculateRoute() {
 
 		if (origin == null) {
-			origin = generateOrigin();
+			// need create an auxiliary variable to select method to create origin Node 
+			origin = generateOrigin(1);
 		}
 
 		for (int i = 0; i < nodes.length; i++) {
@@ -151,6 +152,15 @@ public class Sweep implements Solver {
 
 			@Override
 			public int compare(Node n1, Node n2) {
+				if (n1.getAngle() == n2.getAngle()) {
+					if (calculateDistance(n1)== calculateDistance(n2)) {
+						return 0;
+					}else if (calculateDistance(n1)> calculateDistance(n2)) {
+						return -1;
+					}else {
+						return 1;
+					}
+				}
 				return Double.compare(n1.getAngle(), n2.getAngle());
 			}
 		});
@@ -162,16 +172,42 @@ public class Sweep implements Solver {
 	/*
 	 * this method will generate the origin cordinade
 	 */
-	public Node generateOrigin() {
-		double xPoint = 0;
-		double yPoint = 0;
+	public Node generateOrigin(int choice) {
+		
+		switch (choice) {
+		case 1: 
+			double xPoint = 0;
+			double yPoint = 0;
 
-		for (int i = 0; i < nodes.length; i++) {
-			xPoint += nodes[i].getxCoord();
-			yPoint += nodes[i].getyCoord();
+			for (int i = 0; i < nodes.length; i++) {
+				xPoint += nodes[i].getxCoord();
+				yPoint += nodes[i].getyCoord();
+			}
+			Node origin = new Node(-1, xPoint / nodes.length, yPoint / nodes.length);
+			return origin;
+			
+		case 2: 
+			double xCoord = 0;
+			double yCoord = 0;
+			for (Node x: nodes) {
+				xCoord += x.getxCoord();
+				yCoord += x.getyCoord();
+			}
+			
+			
+		
+		return new Node(-1,xCoord,yCoord);
 		}
-		Node origin = new Node(-1, xPoint / nodes.length, yPoint / nodes.length);
-		return origin;
+		
+		return null;
+	}
+	
+	public double calculateDistance(Node n) {
+		double c1 = Math.pow(origin.getxCoord()-n.getxCoord(),2);
+		double c2 = Math.pow(origin.getyCoord()-n.getyCoord(),2);
+		
+		return Math.sqrt(c1+c2);
+		
 	}
 
 }
