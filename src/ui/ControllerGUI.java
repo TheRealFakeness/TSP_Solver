@@ -90,8 +90,20 @@ public class ControllerGUI {
 		plotRoute(sol);
 	}
 
-	private void opt3Move() {
+	private void opt3Move() throws IOException{
+		//Quitar todo esto al final
+		FileReaderLIB fr = new FileReaderLIB();
+		Model model = fr.readFile();
+		
+		ClarkeAndWright cw = new ClarkeAndWright();
+		Solution sol = cw.solve(model);
+		Model model2=new Model(model.getNodes(),sol.getRoute());
+		
+		Opt3Move o3m = new Opt3Move();
+		Solution sol2 = o3m.Opt3Move(model2);
 
+		cost.setText(sol2.getRouteCost() + "");
+		plotRoute(sol2);
 	}
 
 	public void plotRoute(Solution sol) {

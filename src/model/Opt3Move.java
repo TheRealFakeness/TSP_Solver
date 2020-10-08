@@ -11,7 +11,6 @@ public class Opt3Move implements Solver{
 	}
 	
 	
-	
 	@Override
 	public Solution solve(Model model) {
 		
@@ -32,7 +31,6 @@ public class Opt3Move implements Solver{
 		double[][] distMatrix = model.getDistMatrix();
 		Node[] tour = model.getRoute();
 		
-		
 		boolean foundImprovement = false;
 		
 		while(!foundImprovement) {
@@ -44,14 +42,14 @@ public class Opt3Move implements Solver{
 				int X1 = tour[i].getId();
 				int X2 = tour[(i+1) % size].getId();
 				
-				for(int counter_2=1; counter_2<size-3 && foundImprovement; counter_2++) {
+				for(int counter_2=1; counter_2<size-2 && foundImprovement; counter_2++) {
 					
 					int j = (i + counter_2) % size;
 					int Y1 = tour[j].getId();
 					int Y2 = tour[(j+1) % size].getId();
 					
 					
-					for(int counter_3=j+1; counter_3<size-1 && foundImprovement; counter_3++) {
+					for(int counter_3=counter_2+1; counter_3<size && foundImprovement; counter_3++) {
 						
 						int k = (i + counter_3) % size;
 						int Z1 = tour[k].getId();
@@ -59,10 +57,12 @@ public class Opt3Move implements Solver{
 						
 						for(int optCase=0; optCase<optCases.length; optCase++) {
 							
-							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
+							double ge=gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model);
 							
+							if(ge < 0 && !(Math.abs(ge) < 0.00000001)) {
+								
 								tour=make3OptMove(tour, i, j, k, optCases[optCase]);
-								foundImprovement=false;
+								foundImprovement=false;			
 								break;
 							}
 						}
@@ -80,17 +80,26 @@ public class Opt3Move implements Solver{
 		
 		Stack<Node> reversed=new Stack<>();
 		
+		int z=start;
+		boolean stop=true;
 		//Llenamos el stack
-		for(int z=start; z<=finish;z++) {
-			
-			reversed.push(tour[z]);
-		}
-		
-		for(int z=start; z<=finish;z++) {
-			
-			tour[z]=reversed.pop();
-		}
-		
+		while(stop) {
+			reversed.push(tour[z % tour.length]);
+			if(z % tour.length==finish) {
+				stop=false;
+			}
+			z=z+1;
+		}  
+
+		z=start;
+		stop=true;
+		while(stop) {
+			tour[z % tour.length]=reversed.pop();
+			if(z % tour.length==finish) {
+				stop=false;
+			}
+			z=z+1;
+		} 
 		return tour;
 	}
 	
@@ -150,7 +159,7 @@ public class Opt3Move implements Solver{
 				break;
 			case CASE2:
 				delLength = distMatrix[Y1][Y2] + distMatrix[Z1][Z2];
-				addLength = distMatrix[Y1][Z1] + distMatrix[X2][Z2];
+				addLength = distMatrix[Y1][Z1] + distMatrix[Y2][Z2];
 				break;
 			case CASE3:
 				delLength = distMatrix[X1][X2] + distMatrix[Y1][Y2];
@@ -177,7 +186,6 @@ public class Opt3Move implements Solver{
 		if(optCase == OptCase.CASE4 || optCase == OptCase.CASE5 || optCase == OptCase.CASE6 || optCase == OptCase.CASE7) {
 			delLength = distMatrix[X1][X2] + distMatrix[Y1][Y2] + distMatrix[Z1][Z2];
 		}
-		
 		return addLength - delLength;
 	}
 	
