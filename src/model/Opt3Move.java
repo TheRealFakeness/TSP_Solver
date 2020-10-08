@@ -12,7 +12,6 @@ public class Opt3Move implements Solver{
 	}
 	
 	
-	
 	@Override
 	public Solution solve(Model model) {
 		
@@ -20,7 +19,7 @@ public class Opt3Move implements Solver{
 		return Opt3Move(model);
 	}
 	
-	/*La ruta es de tamaño de la cantidad de nodos, se sobreentiende que el ultimo nodo 
+	/*La ruta es de tamaÃ±o de la cantidad de nodos, se sobreentiende que el ultimo nodo 
 	 * esta conectado con el primer nodo de la ruta
 	 */
 	public Solution Opt3Move(Model model) {
@@ -32,7 +31,6 @@ public class Opt3Move implements Solver{
 		
 		double[][] distMatrix = model.getDistMatrix();
 		Node[] tour = model.getRoute();
-		
 		
 		boolean foundImprovement = false;
 		
@@ -60,15 +58,14 @@ public class Opt3Move implements Solver{
 						
 						for(int optCase=0; optCase<optCases.length && foundImprovement; optCase++) {
 							
+
+							double ge=gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model);
 							
-				
-							if(gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model) < 0) {
-								System.out.println(X1 + " " + X2 + " " + Y1 + " " + Y2 + " " + Z1 + " " + Z2);
-								System.out.println(calculateRouteCost(distMatrix, tour));
+							if(ge < 0 && !(Math.abs(ge) < 0.00000001)) {
 								
-								tour = make3OptMove(tour, i, j, k, optCases[optCase]);
-								foundImprovement=false;
-							
+								tour=make3OptMove(tour, i, j, k, optCases[optCase]);
+								foundImprovement=false;			
+
 								break;
 							}
 						}
@@ -86,17 +83,26 @@ public class Opt3Move implements Solver{
 		
 		Stack<Node> reversed=new Stack<>();
 		
+		int z=start;
+		boolean stop=true;
 		//Llenamos el stack
-		for(int z=start; z<=finish;z++) {
-			
-			reversed.push(tour[z]);
-		}
-		
-		for(int z=start; z<=finish;z++) {
-			
-			tour[z]=reversed.pop();
-		}
-		
+		while(stop) {
+			reversed.push(tour[z % tour.length]);
+			if(z % tour.length==finish) {
+				stop=false;
+			}
+			z=z+1;
+		}  
+
+		z=start;
+		stop=true;
+		while(stop) {
+			tour[z % tour.length]=reversed.pop();
+			if(z % tour.length==finish) {
+				stop=false;
+			}
+			z=z+1;
+		} 
 		return tour;
 	}
 	
@@ -156,7 +162,7 @@ public class Opt3Move implements Solver{
 				break;
 			case CASE2:
 				delLength = distMatrix[Y1][Y2] + distMatrix[Z1][Z2];
-				addLength = distMatrix[Y1][Z1] + distMatrix[X2][Z2];
+				addLength = distMatrix[Y1][Z1] + distMatrix[Y2][Z2];
 				break;
 			case CASE3:
 				delLength = distMatrix[X1][X2] + distMatrix[Y1][Y2];
@@ -165,7 +171,8 @@ public class Opt3Move implements Solver{
 				
 		//3-Opt Moves	
 			case CASE4:
-				addLength = distMatrix[X1][Y1] + distMatrix[X2][Z2] + distMatrix[Y2][Z2];
+				//Cambio Z2 por Z1
+				addLength = distMatrix[X1][Y1] + distMatrix[X2][Z1] + distMatrix[Y2][Z2];
 				break;
 			case CASE5:
 				addLength = distMatrix[X1][Z1] + distMatrix[Y2][X2] + distMatrix[Y1][Z2];
@@ -182,7 +189,6 @@ public class Opt3Move implements Solver{
 		if(optCase == OptCase.CASE4 || optCase == OptCase.CASE5 || optCase == OptCase.CASE6 || optCase == OptCase.CASE7) {
 			delLength = distMatrix[X1][X2] + distMatrix[Y1][Y2] + distMatrix[Z1][Z2];
 		}
-		
 		return addLength - delLength;
 	}
 	

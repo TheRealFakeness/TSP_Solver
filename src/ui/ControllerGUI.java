@@ -90,47 +90,21 @@ public class ControllerGUI {
 		plotRoute(sol);
 	}
 
-	private void opt3Move() throws IOException {
+	private void opt3Move() throws IOException{
+		//Quitar todo esto al final
 		FileReaderLIB fr = new FileReaderLIB();
 		Model model = fr.readFile();
-
+		
 		ClarkeAndWright cw = new ClarkeAndWright();
 		Solution sol = cw.solve(model);
+		Model model2=new Model(model.getNodes(),sol.getRoute());
 		
-		Node[] route = sol.getRoute();
-		Node[] newRoute = new Node[route.length-1];
-		for(int i=0; i<newRoute.length; i++) {
-			newRoute[i] = route[i];
-		}
-		
-		Opt3Move opt3Move = new Opt3Move();
-		Solution sol2 = opt3Move.solve(new Model(model.getNodes(), newRoute));
-		
+		Opt3Move o3m = new Opt3Move();
+		Solution sol2 = o3m.Opt3Move(model2);
+
 		cost.setText(sol2.getRouteCost() + "");
 		plotRoute(sol2);
-		
-//		Opt3Move opt3Move = new Opt3Move();
-//		Model m = testOpt3Move();
-//		Solution sol2 = opt3Move.solve(m);
-//		
-//		cost.setText(sol2.getRouteCost() + "");
-//		plotRoute(sol2);
-	}
-	
-	public Model testOpt3Move() {
-		
-		Node n0 = new Node(0, 2, 2);
-		Node n1 = new Node(1, 2, 4);
-		Node n2 = new Node(2, 4, 2);
-		Node n3 = new Node(3, 4, 4);
-		
-		Node[] nodes = {n0, n1, n2, n3};
-		Node[] tour = nodes;
-		
-		Model m = new Model(nodes, tour);
-		
-		
-		return m;
+
 	}
 
 	public void plotRoute(Solution sol) {
