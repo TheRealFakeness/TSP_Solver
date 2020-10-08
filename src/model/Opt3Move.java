@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 import com.sun.org.apache.xerces.internal.impl.dv.xs.DayDV;
@@ -15,10 +16,10 @@ public class Opt3Move implements Solver{
 	public Solution solve(Model model) {
 		
 		
-		return null;
+		return Opt3Move(model);
 	}
 	
-	/*La ruta es de tamaño de la cantidad de nodos, se sobreentiende que el ultimo nodo 
+	/*La ruta es de tamaÃ±o de la cantidad de nodos, se sobreentiende que el ultimo nodo 
 	 * esta conectado con el primer nodo de la ruta
 	 */
 	public Solution Opt3Move(Model model) {
@@ -55,14 +56,16 @@ public class Opt3Move implements Solver{
 						int Z1 = tour[k].getId();
 						int Z2 = tour[(k+1) % size].getId();
 						
-						for(int optCase=0; optCase<optCases.length; optCase++) {
+						for(int optCase=0; optCase<optCases.length && foundImprovement; optCase++) {
 							
+
 							double ge=gainExpected(X1, X2, Y1, Y2, Z1, Z2, optCases[optCase], model);
 							
 							if(ge < 0 && !(Math.abs(ge) < 0.00000001)) {
 								
 								tour=make3OptMove(tour, i, j, k, optCases[optCase]);
 								foundImprovement=false;			
+
 								break;
 							}
 						}

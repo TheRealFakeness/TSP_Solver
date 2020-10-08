@@ -78,7 +78,7 @@ public class ControllerGUI {
 		cost.setText(sol.getRouteCost() + "");
 		plotRoute(sol);
 	}
-
+	
 	private void clarkAndWright() throws IOException {
 		FileReaderLIB fr = new FileReaderLIB();
 		Model model = fr.readFile();
@@ -104,6 +104,7 @@ public class ControllerGUI {
 
 		cost.setText(sol2.getRouteCost() + "");
 		plotRoute(sol2);
+
 	}
 
 	public void plotRoute(Solution sol) {
@@ -155,6 +156,9 @@ public class ControllerGUI {
 		 */
 
 	}
+	
+	
+	
 
 	private void printMatrix(Node[] nodes) {
 

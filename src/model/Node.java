@@ -96,6 +96,9 @@ public class Node {
 		return angle;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return this.id + "";
+	}
 	
 }
