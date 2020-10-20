@@ -108,6 +108,46 @@ public class Sweep implements Solver {
 	 * 
 	 * <b> post <b> The nodes matrix is reordered based on the tour
 	 */
+	
+	
+	/**
+	 * calculates and assign the angle to specific node
+	 * @param i integer position of node in array 
+	 */
+	public void calculateAngle(int i) {
+
+		//Double x = nodes[i].getxCoord();
+		//Double y = nodes[i].getyCoord();
+		//Double angle = Math.atan(y/x);
+
+		Double xDif = Math.abs(nodes[i].getxCoord() - origin.getxCoord());
+		Double yDif = Math.abs(nodes[i].getxCoord() - origin.getyCoord());
+		Double angle = Math.atan(yDif / xDif);
+
+		// 0 degress from X+ axis and increases angle in anti-clockwise direction
+		if (nodes[i].getxCoord() > origin.getxCoord() && nodes[i].getyCoord() >= origin.getyCoord()) { // First
+																										// quadrant
+			angle += 0;
+
+		} else if (nodes[i].getxCoord() >= origin.getxCoord() && nodes[i].getyCoord() < origin.getyCoord()) { // Fourth
+																												// quadrant
+			angle = 180 - angle;
+
+		} else if (nodes[i].getxCoord() < origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { // Third
+																												// quadrant
+			angle += 180;
+
+		} else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord() > origin.getyCoord()) { // Second
+																												// quadrant
+			angle = 360 - angle;
+
+		}
+
+		nodes[i].setAngle(angle);
+	}
+	
+	
+	
 	public void calculateRoute() {
 
 		if (origin == null) {
@@ -116,58 +156,38 @@ public class Sweep implements Solver {
 		}
 
 		for (int i = 0; i < nodes.length; i++) {
-
-//			Double x = nodes[i].getxCoord();
-//			Double y = nodes[i].getyCoord();
-//			Double angle = Math.atan(y/x);
-
-			Double xDif = Math.abs(nodes[i].getxCoord() - origin.getxCoord());
-			Double yDif = Math.abs(nodes[i].getxCoord() - origin.getyCoord());
-			Double angle = Math.atan(yDif / xDif);
-
-			// 0 degress from X+ axis and increases angle in anti-clockwise direction
-			if (nodes[i].getxCoord() > origin.getxCoord() && nodes[i].getyCoord() >= origin.getyCoord()) { // First
-																											// quadrant
-				angle += 0;
-
-			} else if (nodes[i].getxCoord() >= origin.getxCoord() && nodes[i].getyCoord() < origin.getyCoord()) { // Fourth
-																													// quadrant
-				angle = 180 - angle;
-
-			} else if (nodes[i].getxCoord() < origin.getxCoord() && nodes[i].getyCoord() <= origin.getyCoord()) { // Third
-																													// quadrant
-				angle += 180;
-
-			} else if (nodes[i].getxCoord() <= origin.getxCoord() && nodes[i].getyCoord() > origin.getyCoord()) { // Second
-																													// quadrant
-				angle = 360 - angle;
-
+			calculateAngle(i);
+			
 			}
 
-			nodes[i].setAngle(angle);
-
-		}
-
-		Arrays.sort(nodes, new Comparator<Node>() {
-
-			@Override
-			public int compare(Node n1, Node n2) {
-				if (n1.getAngle() == n2.getAngle()) {
-					if (calculateDistance(n1)== calculateDistance(n2)) {
-						return 0;
-					}else if (calculateDistance(n1)> calculateDistance(n2)) {
-						return -1;
-					}else {
-						return 1;
-					}
-				}
-				return Double.compare(n1.getAngle(), n2.getAngle());
-			}
-		});
+		orderArray();
 
 		// Escojo el menor angulo
 
 	}
+	
+		/**
+		 * Order the array by angles and distances
+		 */
+		public void orderArray() {
+			Arrays.sort(nodes, new Comparator<Node>() {
+
+				@Override
+				public int compare(Node n1, Node n2) {
+					if (n1.getAngle() == n2.getAngle()) {
+						if (calculateDistance(n1)== calculateDistance(n2)) {
+							return 0;
+						}else if (calculateDistance(n1)> calculateDistance(n2)) {
+							return -1;
+						}else {
+							return 1;
+						}
+					}
+					return Double.compare(n1.getAngle(), n2.getAngle());
+				}
+			});
+		}
+	
 
 	/*
 	 * this method will generate the origin cordinade
