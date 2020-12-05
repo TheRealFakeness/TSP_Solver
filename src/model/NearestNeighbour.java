@@ -138,7 +138,7 @@ public class NearestNeighbour implements Solver {
 							
 		}
 		
-	}
+	}	
 	
 	private void printMatrixTT(double[][] m) {
 		
